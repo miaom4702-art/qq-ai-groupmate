@@ -21,5 +21,9 @@ RUN pip install -U pip \
 COPY bot/bot.py bot/pyproject.toml /app/
 RUN mkdir -p /app/plugins /app/data /app/config /app/cache
 
+RUN pip install nb-cli
+COPY deploy/entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
 EXPOSE 8080
-CMD ["python", "bot.py"]
+CMD ["/app/entrypoint.sh"]
