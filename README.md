@@ -10,6 +10,10 @@
 - **Qdrant**：本地向量库
 - **阿里云百炼 / DashScope**：聊天、判断、摘要、视觉标注、Embedding
 
+## 技术报告
+
+[PDF 下载：QQ-AI-Groupmate-Technical-Report.pdf](docs/QQ-AI-Groupmate-Technical-Report.pdf)
+
 ## 功能
 
 - 不需要 @，按概率自主判断是否参与群聊
