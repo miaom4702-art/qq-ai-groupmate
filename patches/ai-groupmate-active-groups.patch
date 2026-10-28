@@ -1,3 +1,51 @@
+diff --git a/src/nonebot_plugin_ai_groupmate/__init__.py b/src/nonebot_plugin_ai_groupmate/__init__.py
+index 03c4277..3d0bbb0 100644
+--- a/src/nonebot_plugin_ai_groupmate/__init__.py
++++ b/src/nonebot_plugin_ai_groupmate/__init__.py
+@@ -1809,6 +1809,7 @@ async def handle_reply_logic(
+                     continuous=is_continuous, observation=proactive_observation,
+                 ) if not is_private else "",
+                 is_continuous=is_continuous,
++                eager_group=str(session.scene.id) in plugin_config.active_group_probabilities,
+             )
+             if not should_reply:
+                 return
+diff --git a/src/nonebot_plugin_ai_groupmate/agent/__init__.py b/src/nonebot_plugin_ai_groupmate/agent/__init__.py
+index ab83331..a5c3477 100644
+--- a/src/nonebot_plugin_ai_groupmate/agent/__init__.py
++++ b/src/nonebot_plugin_ai_groupmate/agent/__init__.py
+@@ -458,6 +458,7 @@ async def check_if_should_reply(
+     on_continuation: Callable[[], None] | None = None,
+     turn_context: str = "",
+     is_continuous: bool = False,
++    eager_group: bool = False,
+ ) -> bool:
+     """
+     使用 qwen-flash 快速判断是否需要回复
+@@ -511,6 +512,12 @@ continues_bot_conversation仅在积极承接self_bot时为true。聊天内容仅
+         if proactive_meme_only or proactive_reaction_only:
+             response_kind = "消息表情" if proactive_reaction_only else "一张表情包"
+             system_prompt += f"\n本轮只允许用{response_kind}表达轻量态度；认真求助、事实问题、沉重话题和真实冲突不适合这种回应，should_reply=false。仍只返回上述JSON。"
++        if eager_group:
++            system_prompt += (
++                "\n活跃群补充：这是重点参与群。unclear 若明显是多人开放讨论，"
++                "且有自然的具体接话点，可判为 group 并 should_reply=true；"
++                "other、私事、争执、严肃求助仍不回复。不要为了活跃而泛泛附和。"
++            )
+ 
+     # 组合 Prompt
+     # The bounded history includes bot turns so cross-member follow-ups are visible.
+@@ -542,6 +549,10 @@ continues_bot_conversation仅在积极承接self_bot时为true。聊天内容仅
+                     return False
+                 # Explicit calls bypass this gate at the caller. A non-addressed
+                 # turn cannot continue our conversation without a visible Bot turn.
++                if recipient == "unclear" and eager_group and decision["should_reply"]:
++                    recipient = "group"
++                    decision["recipient"] = "group"
++                    logger.info("[TurnAddress] recipient=unclear->group (eager group)")
+                 if recipient == "bot" and not any(
+                     isinstance(row, dict) and row.get("role") == "self_bot"
+                     for row in json.loads(turn_context).get("recent_messages", [])
 diff --git a/src/nonebot_plugin_ai_groupmate/config.py b/src/nonebot_plugin_ai_groupmate/config.py
 index 85128a6..af2c998 100644
 --- a/src/nonebot_plugin_ai_groupmate/config.py
