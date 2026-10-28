@@ -1,0 +1,14 @@
+.git
+.github
+reference
+napcat
+qdrant
+bot/.venv
+bot/data
+bot/cache
+bot/config
+bot/.env
+bot/*.log
+tools
+docs
+*.log
