@@ -15,6 +15,7 @@ services:
     environment:
       - MODE=ws
       - WEBUI_TOKEN=${NAPCAT_WEBUI_TOKEN}
+      - ACCOUNT=${BOT_QQ}
       - TZ=Asia/Shanghai
     ports:
       - "127.0.0.1:16099:6099"

@@ -1,6 +1,6 @@
 [project]
 name = "qq-ai-bot"
-version = "0.1.0"
+version = "1.0.0"
 description = "NapCat + NoneBot 群聊 AI，带表情包学习与上下文压缩"
 requires-python = ">=3.10,<3.14"
 dependencies = [

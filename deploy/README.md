@@ -25,7 +25,7 @@ bash deploy/init.sh
 `init.sh` writes the NapCat WebSocket token, generates `deploy/deploy.env`,
 builds the bot image, and starts Qdrant + NapCat + bot.
 
-## First QQ login
+## Quick login after a crash`n`nSet `BOT_QQ` in `deploy/deploy.env` to the bot QQ number. The NapCat image then starts with `-q $BOT_QQ`, so a QQ process crash can often recover without a new QR scan. The first login still requires a QR scan.`n`n## First QQ login
 
 NapCat is headless. Either read the QR from logs:
 

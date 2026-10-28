@@ -14,3 +14,7 @@ __pycache__/
 .DS_Store
 .idea/
 .vscode/
+
+report/
+server-qr*.png
+ssh-tunnel.err.log
