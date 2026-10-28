@@ -1,0 +1,16 @@
+bot/.venv/
+bot/data/
+bot/cache/
+bot/config/
+bot/*.log
+bot/.env
+qdrant/
+napcat/
+reference/
+tools/*.log
+*.log
+__pycache__/
+*.pyc
+.DS_Store
+.idea/
+.vscode/

@@ -1,0 +1,22 @@
+[project]
+name = "qq-ai-bot"
+version = "0.1.0"
+description = "NapCat + NoneBot 群聊 AI，带表情包学习与上下文压缩"
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "nonebot2[fastapi]>=2.4.4",
+    "nonebot-adapter-onebot>=2.4.6",
+    "nonebot-plugin-orm>=0.8.4",
+    "aiosqlite>=0.22.1",
+    "nonebot-plugin-ai-groupmate>=2.5.16",
+    "nb-cli>=1.7.4",
+]
+
+[tool.nonebot]
+plugin_dirs = ["plugins"]
+
+[tool.nonebot.adapters]
+"@local" = [{ name = "OneBot V11", module_name = "nonebot.adapters.onebot.v11" }]
+
+[tool.nonebot.plugins]
+"@local" = ["nonebot_plugin_ai_groupmate"]

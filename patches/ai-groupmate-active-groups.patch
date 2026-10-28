@@ -1,0 +1,42 @@
+diff --git a/src/nonebot_plugin_ai_groupmate/config.py b/src/nonebot_plugin_ai_groupmate/config.py
+index 85128a6..af2c998 100644
+--- a/src/nonebot_plugin_ai_groupmate/config.py
++++ b/src/nonebot_plugin_ai_groupmate/config.py
+@@ -11,6 +11,10 @@ from .deepseek import DeepSeekChatOpenAI, is_deepseek_endpoint
+ class ScopedConfig(BaseModel):
+     bot_name: str = "bot"
+     reply_probability: float = 0.01
++    active_group_probabilities: dict[str, float] = Field(
++        default_factory=dict,
++        description="按群号覆盖主动接话抽样概率，例如 {\"123456789\": 0.4}",
++    )
+     proactive_observation_enabled: bool = True
+     global_model_daily_group_limit_enabled: bool = True
+     global_model_daily_group_limit: int = Field(
+diff --git a/src/nonebot_plugin_ai_groupmate/group_model_config.py b/src/nonebot_plugin_ai_groupmate/group_model_config.py
+index e30f943..cacada8 100644
+--- a/src/nonebot_plugin_ai_groupmate/group_model_config.py
++++ b/src/nonebot_plugin_ai_groupmate/group_model_config.py
+@@ -486,6 +486,9 @@ def resolve_group_reply_probability(
+ 
+         global_config = get_runtime_config()
+     if group_id:
++        boosted = global_config.active_group_probabilities.get(str(group_id))
++        if boosted is not None:
++            return max(0.0, min(1.0, float(boosted)))
+         group_config = _active_configs.get(str(group_id))
+         if group_config is not None and group_config.reply_probability is not None:
+             return group_config.reply_probability
+diff --git a/src/nonebot_plugin_ai_groupmate/participation.py b/src/nonebot_plugin_ai_groupmate/participation.py
+index ffc9f7d..1317a84 100644
+--- a/src/nonebot_plugin_ai_groupmate/participation.py
++++ b/src/nonebot_plugin_ai_groupmate/participation.py
+@@ -100,7 +100,7 @@ class ParticipationPolicy:
+             return False
+         # Each eligible message gets an independent draw. Recent participation
+         # and missed draws never increase the probability of the next message.
+-        probability = min(0.1, probability * affinity_multiplier(key))
++        probability = min(max(0.1, probability), probability * affinity_multiplier(key))
+         if self.random_sample() >= probability:
+             return False
+         state.last_check = now
